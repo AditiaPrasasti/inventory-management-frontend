@@ -32,14 +32,14 @@ export default {
             users: [
                 {
                     id: 1,
-                    username: 'Nanda',
-                    email: 'nanda@gmail.com',
+                    username: 'Aditia',
+                    email: 'adit@gmail.com',
                     role: 'Admin',
                 },
                 {
                     id: 2,
-                    username: 'Wendy',
-                    email: 'wendy@gmail.com',
+                    username: 'Budi',
+                    email: 'budi@gmail.com',
                     role: 'User',
                 },
             ],
