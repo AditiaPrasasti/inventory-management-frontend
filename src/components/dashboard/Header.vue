@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { EventBus } from "@/utils/EventBus";
+import eventBus from "@/utils/EventBus";
 
 export default {
   data() {

@@ -1,27 +1,33 @@
 <template>
-  <div class="item-list">
-    <div class="header">
+  <div class="item-list container py-4 bg-white rounded shadow-sm">
+    <div class="header d-flex justify-content-between align-items-center mb-3">
       <h2>Daftar Barang</h2>
-      <button class="add-btn" @click="showAddForm">Tambah Item</button>
+      <button class="btn btn-primary" @click="showAddForm">Tambah Item</button>
     </div>
 
-    <div class="item-cards">
+    <div class="item-cards row">
       <ItemCard
         v-for="item in items"
         :key="item.kode"
         :item="item"
         @edit-item="editItem"
         @delete-item="deleteItem"
+        class="col-md-6 mb-4"
       />
     </div>
+
     <Modal :visible="showForm" @close="cancelEditForm">
-      <ItemForm :item="selectedItem" :isEdit="isEdit" @submit="handleSubmit" />
+      <ItemForm
+        :item="selectedItem"
+        :isEdit="isEdit"
+        @submit="handleSubmit"
+        @cancel="cancelEditForm"
+      />
     </Modal>
   </div>
 </template>
 
 <script>
-
 import ItemCard from "./ItemCard.vue";
 import Modal from "../../Modal.vue";
 import ItemForm from "./ItemForm.vue";
@@ -55,17 +61,20 @@ export default {
   },
   methods: {
     showAddForm() {
-      this.selectedItem = { kode: "", nama: "", deskripsi: "", stok: 0 };
-      this.isEdit = false;
+      (this.selectedItem = {
+        kode: "",
+        nama: "",
+        deskripsi: "",
+        stok: 0,
+      }),
+        (this.isEdit = false);
       this.showForm = true;
     },
-
     editItem(item) {
       this.selectedItem = { ...item };
       this.isEdit = true;
       this.showForm = true;
     },
-
     handleSubmit(item) {
       if (
         item.kode &&
@@ -75,23 +84,22 @@ export default {
         !isNaN(item.stok)
       ) {
         if (this.isEdit) {
-          const index = this.items.findIndex((i) => i.kode === item.kode);
-          if (index !== -1) {
-            this.items[index] = item;
-          }
+          let index = this.items.findIndex((i) => i.kode === item.kode);
+          this.items[index] = item;
         } else {
           this.items.push(item);
         }
       }
       this.showForm = false;
     },
-
     cancelEditForm() {
       this.showForm = false;
+      this.selectedItem = null;
+      this.isEdit = false;
     },
-
     deleteItem(kode) {
       this.items = this.items.filter((item) => item.kode !== kode);
+      this.$emit("delete-item", kode);
     },
   },
 };
@@ -99,42 +107,23 @@ export default {
 
 <style scoped>
 .item-list {
-  padding: 24px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-h2 {
+.header h2 {
   color: #4b3f6b;
   font-size: 24px;
 }
 
-.add-btn {
-  background-color: #754bc5;
+.header .btn-primary {
+  background-color: #4b3f6b;
   color: white;
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
 }
 
-.add-btn:hover {
-  background-color: #5a37a0;
-}
-
-.item-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.header .btn-primary:hover {
+  background-color: blue;
+  color: white;
 }
 </style>

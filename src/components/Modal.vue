@@ -1,10 +1,39 @@
 <template>
-  <div v-if="visible" class="modal-overlay">
-    <div class="modal-content">
-      <button class="close-button" @click="$emit('close')">&times;</button>
-      <slot></slot>
+    <div
+        class="modal fade"
+        :class="{ show: visible, 'd-block': visible }"
+        tabindex="-1"
+        aria-modal="true"
+        role="dialog"
+        v-if="visible"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="btn-close"
+                        @click="$emit('close')"
+                        aria-label="Close"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    <slot></slot>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        @click="$emit('close')"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -19,6 +48,14 @@ export default {
 </script>
 
 <style scoped>
+.modal {
+  display: block;
+}
+
+.modal-show {
+  display: block;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -59,7 +96,7 @@ export default {
 
 .close-button {
   position: absolute;
-  top: -5px; /* Mengatur posisi tombol lebih tinggi dari atas modal */
+  top: -5px;
   right: 1px;
   background: none;
   border: none;
