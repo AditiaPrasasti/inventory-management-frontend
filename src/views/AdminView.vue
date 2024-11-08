@@ -33,7 +33,7 @@ export default {
     ItemForm,
     UserList,
     TransactionList,
-    Modal, 
+    Modal,
   },
   props: {
     currentComponent: {

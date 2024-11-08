@@ -6,32 +6,42 @@
         <input
           type="text"
           v-model="search"
+          @input="emitSearch"
           placeholder="Search"
-          class="search-bar"
+          class="search-bar form-control"
         />
       </div>
-
       <div class="role-selection">
         <button
           @click="selectRole('admin')"
-          :class="{ active: currentRole === 'admin' }"
+          :class="[
+            'btn',
+            'btn-outline-light',
+            { active: currentRole === 'admin' },
+          ]"
         >
           Admin
         </button>
-
         <button
           @click="selectRole('user')"
-          :class="{ active: currentRole === 'user' }"
+          :class="[
+            'btn',
+            'btn-outline-light',
+            { active: currentRole === 'user' },
+          ]"
         >
           User
         </button>
+      </div>
+      <div class="logout-container">
+        <button class="btn btn-outline-light" @click="logout">Logout</button>
       </div>
     </div>
   </header>
 </template>
 
 <script>
-import eventBus from "@/utils/EventBus";
+import { EventBus } from "@/utils/EventBus";
 
 export default {
   data() {
@@ -39,31 +49,45 @@ export default {
       search: "",
     };
   },
-
   props: {
     currentRole: {
       type: String,
       required: true,
     },
-
     isSidebarVisible: {
       type: Boolean,
       required: true,
     },
   },
-
-  watch: {
-    search(newQuery) {
-      eventBus.$emit("search", newQuery);
-    },
-  },
-
   methods: {
     selectRole(role) {
       this.$emit("update-role", role);
+      let authRole = localStorage.getItem("role");
+      let isAuthenticated = Boolean(localStorage.getItem("auth"));
+
+      if (isAuthenticated && authRole === role) {
+        this.$router.push({
+          name: role,
+          params: { component: "items" },
+        });
+      } else {
+        alert("You do not have permission to switch to this role.");
+        this.$router.push({ name: "login" });
+        this.$emit("toggle-sidebar", false);
+      }
     },
     toggleSidebar() {
       this.$emit("toggle-sidebar");
+    },
+    emitSearch() {
+      EventBus.emit("search", this.search);
+    },
+    logout() {
+      localStorage.removeItem("auth");
+      localStorage.removeItem("role");
+      this.$emit("update-role", "admin");
+      this.$emit("toggle-sidebar", false);
+      this.$router.push({ name: "login" });
     },
   },
 };
@@ -76,10 +100,10 @@ header {
   display: flex;
   align-items: center;
   height: 60px;
-  width: calc(100% - 180px);
+  width: calc(100% - 200px);
   position: fixed;
   top: 0;
-  left: 160px;
+  left: 200px;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease, left 0.3s ease;
@@ -130,43 +154,78 @@ header.expanded {
   padding: 10px;
 }
 
-button {
-  margin: 0 10px;
+.role-selection .btn {
+  margin-right: 10px;
+}
+
+.logout-container {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
   padding: 5px 10px;
   font-size: 14px;
   cursor: pointer;
   border: none;
-  background-color: #4b3f6b;
-  color: white;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #6b5bb8;
+.logout-btn {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
 }
+
+
 
 button.active {
   background-color: #6b5bb8;
+  color: white;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 991.98px) {
   header {
-    width: 100%;
-    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 10px;
   }
 
   .header-content {
+    display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .search-bar-container {
-    margin-right: 0;
+    width: 80%;
+    margin: 10px 0;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .role-selection {
+    display: flex;
+    justify-content: center;
+    width: 100%;
     margin-bottom: 10px;
-    margin-top: 16px;
+  }
+
+  .logout-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   .toggle-btn {
-    display: block;
+    margin-bottom: 4px;
   }
 }
 </style>
