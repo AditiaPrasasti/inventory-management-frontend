@@ -7,7 +7,7 @@
 
     <div class="item-cards row">
       <ItemCard
-        v-for="item in items"
+        v-for="item in filteredItems"
         :key="item.kode"
         :item="item"
         @edit-item="editItem"
@@ -28,9 +28,11 @@
 </template>
 
 <script>
+import { EventBus } from "@/utils/EventBus";
 import ItemCard from "./ItemCard.vue";
 import Modal from "../../Modal.vue";
 import ItemForm from "./ItemForm.vue";
+import { useItemStore } from "@/store/itemStore";
 
 export default {
   components: {
@@ -43,17 +45,28 @@ export default {
       showForm: false,
       selectedItem: null,
       isEdit: false,
+      searchQuery: "",
     };
+  },
+  computed: {
+    items() {
+      return this.itemStore.items;
+    },
+    filteredItems() {
+      return this.items.filter((item) =>
+        item.nama.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
   methods: {
     showAddForm() {
-      (this.selectedItem = {
+      this.selectedItem = {
         kode: "",
         nama: "",
         deskripsi: "",
         stok: 0,
-      }),
-        (this.isEdit = false);
+      };
+      this.isEdit = false;
       this.showForm = true;
     },
     editItem(item) {
@@ -62,31 +75,43 @@ export default {
       this.showForm = true;
     },
     handleSubmit(item) {
-      if (
+      if (this.validateItem(item)) {
+        if (this.isEdit) {
+          this.itemStore.updateItem(item);
+        } else {
+          this.itemStore.addItem(item);
+        }
+        this.showForm = false;
+      }
+    },
+    validateItem(item) {
+      return (
         item.kode &&
         item.nama &&
         item.deskripsi &&
         item.stok !== null &&
         !isNaN(item.stok)
-      ) {
-        if (this.isEdit) {
-          let index = this.items.findIndex((i) => i.kode === item.kode);
-          this.items[index] = item;
-        } else {
-          this.items.push(item);
-        }
-      }
-      this.showForm = false;
+      );
     },
     cancelEditForm() {
       this.showForm = false;
-      this.selectedItem = null;
-      this.isEdit = false;
     },
     deleteItem(kode) {
-      this.items = this.items.filter((item) => item.kode !== kode);
-      this.$emit("delete-item", kode);
+      this.itemStore.deleteItem(kode);
     },
+    handleSearch(query) {
+      this.searchQuery = query;
+    },
+  },
+  mounted() {
+    EventBus.on("search", this.handleSearch);
+  },
+  beforeUnmount() {
+    EventBus.off("search", this.handleSearch);
+  },
+  setup() {
+    const itemStore = useItemStore();
+    return { itemStore };
   },
 };
 </script>

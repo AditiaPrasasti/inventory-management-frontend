@@ -22,6 +22,7 @@ export const useItemStore = defineStore("item", {
       return state.items.find((item) => item.kode === kode);
     },
     totalItem: (state) => state.items.length,
+    avalaibleItems: (state) => state.items.filter((item) => item.stok > 0),
   },
   actions: {
     addItem(item) {
