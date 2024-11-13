@@ -4,8 +4,8 @@ import "./assets/styles/global.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import router from "./router"; // Only one router import
+import router from "./router";
 import { createPinia } from "pinia";
-import axios from "axios"; // This import can stay if you're using axios elsewhere in the app
+import axios from "axios";
 
 createApp(App).use(router).use(createPinia()).mount("#app");
