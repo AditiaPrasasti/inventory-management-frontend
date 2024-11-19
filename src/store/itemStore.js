@@ -28,16 +28,21 @@ export const useItemStore = defineStore("item", {
     addItem(item) {
       this.items.push(item);
     },
+
     updateItem(updatedItem) {
       const index = this.items.findIndex(
         (item) => item.kode === updatedItem.kode
       );
+
       if (index !== -1) {
         this.items[index] = updatedItem;
       }
     },
+
     deleteItem(kode) {
       this.items = this.items.filter((item) => item.kode !== kode);
     },
   },
+
+  persist: true, // Aktifkan persistensi state
 });
