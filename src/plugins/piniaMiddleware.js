@@ -3,10 +3,7 @@ export function createPiniaMiddleware() {
     context.store.$onAction(({ name, store, args, after, onError }) => {
       console.log(`Action "${name}" in store "${store.$id}" with args:`, args);
 
-      // Proteksi state berdasarkan user role
-
       const userRole = localStorage.getItem("role");
-
       const protectedActions = ["addItem", "updateItem", "deleteItem"];
 
       if (protectedActions.includes(name) && userRole !== "admin") {
