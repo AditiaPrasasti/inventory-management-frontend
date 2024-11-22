@@ -43,6 +43,7 @@
         </a>
       </p>
     </div>
+    <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div>
   </div>
 </template>
 
@@ -61,7 +62,10 @@ export default {
   methods: {
     async login() {
       try {
-        const { token, role } = await loginService(this.username, this.password);
+        const { token, role } = await loginService(
+          this.username,
+          this.password
+        );
         const authStore = useAuthStore();
         authStore.setToken(token);
         authStore.setRole(role);
